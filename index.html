@@ -7,10 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc; /* Light blue-gray background */
-            color: #334155; /* Darker text */
+            background-color: #f8fafc;
+            color: #334155;
             line-height: 1.6;
         }
         .container {
@@ -18,57 +21,121 @@
             margin: 0 auto;
             padding: 2rem;
         }
+        /* --- Navigation & Scrolling START --- */
+        .top-nav {
+            position: sticky;
+            top: 0;
+            background-color: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 50;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .top-nav .nav-links {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+        .top-nav a {
+            color: #f8fafc;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 0.5rem 0;
+            transition: color 0.3s ease;
+        }
+        .top-nav a:hover {
+            color: #0d9488;
+        }
+        #back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #0d9488;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, background-color 0.3s;
+            z-index: 100;
+        }
+        #back-to-top:hover {
+            background-color: #0f766e;
+        }
+        #back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        /* --- Navigation & Scrolling END --- */
+
         .header {
-            background-color: #1e293b; /* Darker blue-gray */
+            background-color: #1e293b;
             color: #f8fafc;
             padding: 2.5rem 0;
-            text-align: center; /* This will be overridden for the inner flex container */
+            text-align: center;
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         .header .container {
-            display: flex; /* Enable flexbox for the header content */
-            align-items: center; /* Vertically align items in the center */
-            justify-content: center; /* Center content horizontally */
-            text-align: left; /* Reset text alignment within flex item */
-            flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: left;
+            flex-wrap: wrap;
         }
         .header h1 {
             font-size: 2.8rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
             letter-spacing: -0.025em;
-            margin-left: 1rem; /* Space between logo and title */
-            line-height: 1.2; /* Adjust line height for better alignment with logo */
+            margin-left: 1rem;
+            line-height: 1.2;
         }
         .header p {
             font-size: 1.2rem;
             font-weight: 300;
             opacity: 0.9;
-            width: 100%; /* Ensure subtitle takes full width below main title and logo */
-            text-align: center; /* Center the subtitle */
-            margin-top: 0.5rem; /* Space between title and subtitle */
+            width: 100%;
+            text-align: center;
+            margin-top: 0.5rem;
         }
         .header .logo {
-            height: 120px; /* Adjust logo height as needed */
+            height: 90px;
             width: auto;
         }
         @media (max-width: 768px) {
+            .top-nav {
+                overflow-x: auto;
+                padding: 0.25rem 0.5rem;
+            }
+            .top-nav .nav-links {
+                justify-content: flex-start;
+                gap: 1rem;
+                padding: 0 0.5rem;
+            }
             .header .container {
-                flex-direction: column; /* Stack logo and text vertically on small screens */
+                flex-direction: column;
                 text-align: center;
             }
             .header h1 {
                 font-size: 2rem;
                 margin-left: 0;
-                margin-top: 1rem; /* Space above title when stacked */
+                margin-top: 1rem;
             }
             .header p {
                 font-size: 1rem;
             }
             .header .logo {
-                height: 90px; /* Smaller logo on small screens */
+                height: 70px;
             }
         }
 
@@ -82,7 +149,7 @@
         .section h2 {
             font-size: 2rem;
             font-weight: 600;
-            color: #0f172a; /* Even darker blue-gray */
+            color: #0f172a;
             margin-bottom: 1.5rem;
             border-bottom: 2px solid #e2e8f0;
             padding-bottom: 0.75rem;
@@ -95,7 +162,7 @@
             margin-bottom: 1rem;
         }
         .highlight {
-            color: #0d9488; /* Teal for emphasis */
+            color: #0d9488;
             font-weight: 600;
         }
         ul {
@@ -111,7 +178,7 @@
         li {
             margin-bottom: 0.5rem;
         }
-        .button {
+        .button, .cta-button {
             display: inline-block;
             background-color: #0d9488;
             color: white;
@@ -122,10 +189,21 @@
             transition: background-color 0.3s ease, transform 0.2s ease;
             cursor: pointer;
         }
-        .button:hover {
+        .button:hover, .cta-button:hover {
             background-color: #0f766e;
             transform: translateY(-2px);
         }
+        /* --- Call to Action START --- */
+        .cta-section {
+            text-align: center;
+            padding: 2.5rem 1rem 1rem 1rem;
+        }
+        .cta-button {
+            font-size: 1.2rem;
+            padding: 1rem 2.5rem;
+            box-shadow: 0 4px 14px 0 rgba(13, 148, 136, 0.39);
+        }
+        /* --- Call to Action END --- */
         .case-study-content {
             display: none;
             background-color: #f1f5f9;
@@ -142,18 +220,6 @@
             font-size: 0.9rem;
             border-top: 1px solid #e2e8f0;
         }
-        .author-spotlight {
-            background-color: #f0f9ff; /* Lighter blue */
-            border-left: 5px solid #3b82f6; /* Blue border */
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-            border-radius: 10px;
-            font-style: italic;
-            color: #1e40af;
-        }
-        .author-spotlight strong {
-            color: #2563eb;
-        }
         .image-placeholder {
             margin: 2rem 0;
             text-align: center;
@@ -165,8 +231,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        /* Responsive adjustments */
-        /* Existing media query is fine for general layout, but specific header adjustments moved to .header .container media query */
         @media (max-width: 768px) {
             .section {
                 padding: 1.5rem;
@@ -180,18 +244,29 @@
         }
         .iframe-container {
             margin-top: 1.5rem;
-            border: 1px solid #cbd5e1; /* Light gray border */
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
-            overflow: hidden; /* Ensures content within iframe respects border-radius */
+            overflow: hidden;
         }
         .iframe-container iframe {
             width: 100%;
-            height: 600px; /* Adjust height as needed */
-            border: none; /* Remove default iframe border */
+            height: 600px;
+            border: none;
         }
     </style>
 </head>
 <body>
+
+    <nav class="top-nav">
+        <div class="nav-links">
+            <a href="#introduction">Introduction</a>
+            <a href="#principle">Principle</a>
+            <a href="#studies">Case Studies</a>
+            <a href="#pipeline">Pipeline</a>
+            <a href="#applications">Applications</a>
+        </div>
+    </nav>
+
     <div class="header">
         <div class="container">
             <img src="PHASE-seq_logo.png" alt="PHASE-seq Logo" class="logo">
@@ -203,21 +278,27 @@
     </div>
 
     <div class="container">
-        <div class="section">
+        <div class="section" id="introduction">
             <h2>Introduction to PHASE-seq</h2>
             <p>
-                <span class="highlight">PHASE-seq (PacBio HiFi Analysis of Somatic Events)</span> is a cutting-edge, high-resolution long-read sequencing strategy built upon PacBio's HiFi technology. It is meticulously designed for the accurate and sensitive detection of ultra-rare somatic mutations across the entire genome, offering unprecedented insights into genomic integrity and mutation dynamics.
+                <span class="highlight">PHASE-seq (PacBio HiFi Analysis of Somatic Events)</span> is a cutting-edge, high-resolution long-read sequencing strategy built upon PacBio's HiFi technology. It is meticulously designed for the accurate and sensitive detection of ultra-rare somatic mutations across the entire genome.
             </p>
+            <p class="mt-4">
+                The computational analysis for the PHASE-seq method is implemented in the <strong>PHASE Suite</strong>, our open-source toolkit that includes the command-line pipeline and other resources.
+            </p>
+            <div class="cta-section">
+                <a href="https://github.com/PHASE-Suite/PHASE-Suite" class="cta-button" target="_blank" rel="noopener noreferrer">Get the Pipeline on GitHub</a>
+            </div>
         </div>
 
-        <div class="section">
+        <div class="section" id="principle">
             <h2>The Principle Behind PHASE-seq</h2>
             <p>
-                At its core, PHASE-seq leverages the unique capabilities of PacBio HiFi reads. Unlike traditional short-read sequencing, HiFi reads are characterized by their exceptional length and high accuracy, achieved through multiple passes over a circularized DNA molecule. This intrinsic error-correction mechanism enables <span class="highlight">single-molecule mutation analysis with remarkable fidelity</span>. By reading the same DNA strand multiple times, random sequencing errors are effectively minimized, allowing for the confident identification of true biological mutations, even those present at very low frequencies. This capability is crucial for resolving complex mutational patterns that might be obscured by the higher error rates inherent in other sequencing platforms.
+                At its core, PHASE-seq leverages the unique capabilities of PacBio HiFi reads. Unlike traditional short-read sequencing, HiFi reads are characterized by their exceptional length and high accuracy, achieved through multiple passes over a circularized DNA molecule. This intrinsic error-correction mechanism enables <span class="highlight">single-molecule mutation analysis with remarkable fidelity</span>. By reading the same DNA strand multiple times, random sequencing errors are effectively minimized, allowing for the confident identification of true biological mutations, even those present at very low frequencies.
             </p>
         </div>
 
-        <div class="section">
+        <div class="section" id="studies">
             <h2>PHASE-seq in Action: Insights from In Vivo Mutagenesis Studies</h2>
             <p>
                 The power of PHASE-seq has been significantly demonstrated in the recent work by <span class="highlight">Jaime A. Miranda and Javier R. Revollo</span> in their paper, &ldquo;Assessment of in vivo chemical mutagenesis by long-read sequencing.&rdquo; This study showcased how PHASE-seq can be effectively implemented to assess mutation rates and detect subtle mutational signatures directly within animal tissues.
@@ -225,18 +306,18 @@
             <div class="image-placeholder">
                 <img src="experimental_workflow.png" alt="Diagram illustrating the experimental setup and sample flow for PHASE-seq in a mutagenesis study.">
                 <p class="text-sm text-gray-500 mt-2">
-                    <em>Figure: A conceptual diagram illustrating the experimental workflow for assessing in vivo chemical mutagenesis using PHASE-seq.</em>
+                    <em>Figure: A conceptual diagram illustrating the experimental workflow for assessing in vivo chemical mutagenesis using PHASE-seq. This would typically show animal exposure, tissue collection, and subsequent sequencing steps.</em>
                 </p>
             </div>
             <p>
-                The authors utilized PHASE-seq to evaluate the mutagenic effects of known chemical mutagens—7,12-dimethylbenz[a]anthracene (DMBA), procarbazine (PCZ), and N-propyl-N-nitrosourea (PNU)—in various tissues (kidney, liver, lung, and spleen) of C57BL/6 mice. They observed <span class="highlight">dose-dependent increases in mutation frequencies (MFs)</span> across all tested mutagens and tissues. For instance, the highest doses of DMBA, PCZ, and PNU led to substantial fold increases in MFs, highlighting the method's sensitivity in quantifying mutagen-induced DNA damage.
+                The authors utilized PHASE-seq to evaluate the mutagenic effects of known chemical mutagens—7,12-dimethylbenz[a]anthracene (DMBA), procarbazine (PCZ), and N-propyl-N-nitrosourea (PNU)—in various tissues of C57BL/6 mice. They observed <span class="highlight">dose-dependent increases in mutation frequencies (MFs)</span> across all tested mutagens and tissues.
             </p>
             <p>
-                Furthermore, PHASE-seq enabled the derivation of <span class="highlight">mutational signatures</span> that were consistent with those previously reported for these mutagens in the literature. This ability to characterize specific mutational patterns provides critical information about the mechanisms of mutagenesis. The study also elegantly differentiated between pre-existing and de novo somatic mutations by leveraging the genetic homogeneity of C57BL/6 mice, establishing a robust framework for identifying true mutagen-induced events. This research underscores PHASE-seq's potential to complement established mutation detection assays and facilitate the identification of hazardous compounds with high precision.
+                Furthermore, PHASE-seq enabled the derivation of <span class="highlight">mutational signatures</span> that were consistent with those previously reported for these mutagens in the literature. This ability to characterize specific mutational patterns provides critical information about the mechanisms of mutagenesis.
             </p>
         </div>
 
-        <div class="section">
+        <div class="section" id="pipeline">
             <h2>The PHASE-seq Experimental Pipeline</h2>
             <p>
                 The PHASE-seq workflow is designed for comprehensive and accurate mutation detection, encompassing several key stages:
@@ -248,101 +329,95 @@
             </ul>
             <h3>2. HiFi Library Construction and PacBio Sequencing</h3>
             <ul>
-                <li>Sheared DNA fragments are subjected to end-repair and adapter ligation to create SMRTbell libraries. These circularized DNA molecules allow the polymerase to pass over the same template multiple times, generating highly accurate HiFi reads.</li>
-                <li>Libraries are then sequenced on PacBio platforms (e.g., Sequel II or Revio sequencer), producing long reads with integrated error correction.</li>
+                <li>Sheared DNA fragments are subjected to end-repair and adapter ligation to create SMRTbell libraries.</li>
+                <li>Libraries are then sequenced on PacBio platforms, producing long reads with integrated error correction.</li>
             </ul>
             <div class="image-placeholder">
                 <img src="library_prep.png" alt="Diagram illustrating the PacBio SMRTbell library preparation process.">
                 <p class="text-sm text-gray-500 mt-2">
-                    <em>Figure: Schematic representation of the HiFi library construction process, showing DNA fragmentation, end repair, adapter ligation, and circularization to form SMRTbell templates.</em>
+                    <em>Figure: Schematic representation of the HiFi library construction process.</em>
                 </p>
             </div>
             <h3>3. Bioinformatics Tools for Alignment, Variant Calling, and Error Correction</h3>
             <ul>
                 <li>Raw sequencing data (BAM files) are converted to FASTQ format (e.g., using Samtools).</li>
-                <li>Reads are aligned to a reference genome (e.g., UCSC hg38 or mm10) using tools optimized for long reads, such as BWA (with specific parameters for HiFi reads).</li>
+                <li>Reads are aligned to a reference genome (e.g., UCSC hg38 or mm10) using tools like BWA.</li>
                 <li>Alignments are processed, and substitution variants are extracted from read segments.</li>
             </ul>
             <div class="image-placeholder">
                 <img src="data_web.png" alt="Diagram illustrating the bioinformatics pipeline for PHASE-seq data analysis.">
                 <p class="text-sm text-gray-500 mt-2">
-                    <em>Figure: Overview of the bioinformatics pipeline for PHASE-seq, detailing steps from read alignment to variant calling.</em>
+                    <em>Figure: Overview of the bioinformatics pipeline for PHASE-seq.</em>
                 </p>
             </div>
             <h3>4. Custom Computational Steps for Mutation Detection</h3>
             <ul>
                 <li>Variants detected in both forward and reverse reads are merged to increase confidence.</li>
-                <li>A critical step involves differentiating true de novo somatic mutations from pre-existing variants or sequencing artifacts. This can be achieved by comparing variants across multiple samples or by applying stringent filtering criteria based on mapping qualities and variant frequency within reads.</li>
-                <li>For inbred models, a composite genome dataset approach can be used, where common variants across samples are considered pre-existing, and unique variants are classified as de novo mutations.</li>
-                <li>Mutational frequencies are calculated, and mutational signatures can be derived by analyzing the trinucleotide context of identified mutations.</li>
+                <li>A critical step involves differentiating true de novo somatic mutations from pre-existing variants or sequencing artifacts.</li>
+                <li>For inbred models, a composite genome dataset approach can be used to classify de novo mutations.</li>
+                <li>Mutational frequencies are calculated, and mutational signatures can be derived.</li>
             </ul>
             <div class="image-placeholder">
                 <img src="data_analysis.png" alt="Diagram illustrating the composite genome approach for identifying de novo mutations.">
                 <p class="text-sm text-gray-500 mt-2">
-                    <em>Figure: Visualization of the composite genome approach, showing how common variants across multiple samples are filtered out to identify unique, de novo somatic mutations.</em>
+                    <em>Figure: Visualization of the composite genome approach.</em>
                 </p>
             </div>
         </div>
 
-        <div class="section">
+        <div class="section" id="advantages">
             <h2>PHASE-seq vs. Short-Read Methods: A Clear Advantage</h2>
             <p>
-                PHASE-seq offers distinct advantages over conventional short-read sequencing methods, particularly in the context of rare mutation detection:
+                PHASE-seq offers distinct advantages over conventional short-read sequencing methods:
             </p>
             <ul>
-                <li><span class="highlight">Single-Molecule Resolution:</span> Unlike short-read platforms that require complex molecular barcoding and clustering analyses for error correction, PHASE-seq's inherent error correction at the single-molecule level simplifies library preparations and bioinformatics. This means it can capture mutations across entire long molecules, providing a more complete picture of genomic changes.</li>
-                <li><span class="highlight">Reduced Error Rate:</span> The multiple passes over a circularized DNA template in PacBio HiFi sequencing significantly reduce the effective error rate (down to 1x10^-8 mutations per base pair), making it highly sensitive for detecting ultra-low frequency mutations that might be indistinguishable from sequencing noise in short-read data.</li>
-                <li><span class="highlight">Unbiased Genome-Wide Detection:</span> While many Illumina-based error-corrected sequencing (ECS) methods target specific genomic regions, PHASE-seq, as applied in these studies, can identify de novo mutations across randomly sheared genomic double-stranded DNA fragments, offering an unbiased, genome-wide view of mutagenesis.</li>
+                <li><span class="highlight">Single-Molecule Resolution:</span> Inherent error correction simplifies library preparations and bioinformatics.</li>
+                <li><span class="highlight">Reduced Error Rate:</span> Multiple passes over a DNA template significantly reduce the error rate, making it highly sensitive for detecting ultra-low frequency mutations.</li>
+                <li><span class="highlight">Unbiased Genome-Wide Detection:</span> Identifies de novo mutations across randomly sheared genomic fragments, offering an unbiased, genome-wide view.</li>
             </ul>
         </div>
 
-        <div class="section">
+        <div class="section" id="applications">
             <h2>Key Applications of PHASE-seq</h2>
-            <p>
-                The high sensitivity and accuracy of PHASE-seq make it an invaluable tool for a variety of critical applications in genomics and toxicology:
-            </p>
             <ul>
-                <li><span class="highlight">Tracking Mutagenic Processes In Vitro:</span> PHASE-seq can precisely quantify spontaneous and induced mutation frequencies in cell cultures, providing a robust method for assessing the mutagenicity of chemical agents. For instance, the study by <span class="highlight">Jaime A. Miranda et al. (2025)</span> used PHASE-seq to demonstrate the impact of background mutation frequencies in TK6 and L5178Y cells on in vitro error-corrected sequencing analyses.</li>
-                <li><span class="highlight">Assessing the Fidelity of Genome Editing Tools:</span> It is highly effective in detecting rare off-target mutations induced by genome editing tools like CRISPR/Cas9 and base editors, ensuring the safety and precision of these technologies. <span class="highlight">Jaime A. Miranda et al. (2023)</span> demonstrated the unbiased whole genome detection of ultrarare off-target mutations in genome-edited cell populations by HiFi sequencing.</li>
-                <li><span class="highlight">Investigating the Mutational Footprint of Environmental Exposures:</span> By accurately identifying subtle mutational signatures, PHASE-seq can help link specific environmental exposures to characteristic DNA damage patterns in organisms.</li>
+                <li><span class="highlight">Tracking Mutagenic Processes In Vitro:</span> Precisely quantify spontaneous and induced mutation frequencies in cell cultures.</li>
+                <li><span class="highlight">Assessing the Fidelity of Genome Editing Tools:</span> Effectively detect rare off-target mutations from tools like CRISPR/Cas9.</li>
+                <li><span class="highlight">Investigating Environmental Exposures:</span> Link specific environmental exposures to characteristic DNA damage patterns.</li>
             </ul>
         </div>
 
-        <div class="section">
+        <div class="section" id="prior-studies">
             <h2>Prior Studies and Demonstrated Utility</h2>
             <p>
-                PHASE-seq, or methodologies closely related to it using PacBio HiFi sequencing for error correction, has been instrumental in several foundational studies:
+                PHASE-seq, or closely related methodologies using PacBio HiFi sequencing, has been instrumental in several foundational studies:
             </p>
             <ul>
                 <li>
-                    <span class="highlight">Genome-wide detection of ultralow-frequency substitution mutations in cultures of mouse lymphoma L5178Y cells and Caenorhabditis elegans worms by PacBio sequencing</span> (Miranda, Alund, et al. 2022):
+                    <span class="highlight">Genome-wide detection of ultralow-frequency mutations...</span> (Miranda, Alund, et al. 2022)
                     <p class="case-study-content" id="study1-content">
-                        In this study, <span class="highlight">Jaime A. Miranda</span> and colleagues applied PacBio sequencing to detect ultra-low frequency mutations in two different model systems. This work demonstrated the broad applicability of the method for genome-wide mutation detection, laying groundwork for its use in diverse biological contexts.
+                        In this study, <span class="highlight">Jaime A. Miranda</span> and colleagues applied PacBio sequencing to detect ultra-low frequency mutations in two different model systems, demonstrating the broad applicability of the method.
                     </p>
                     <button class="button" onclick="toggleContent('study1-content')">Read More</button>
                 </li>
-                <li>
-                    <span class="highlight">Unbiased whole genome detection of ultrarare off-target mutations in genome-edited cell populations by HiFi sequencing</span> (Miranda, Fenner, et al. 2023):
+                <li class="mt-4">
+                    <span class="highlight">Unbiased whole genome detection of ultrarare off-target mutations...</span> (Miranda, Fenner, et al. 2023)
                     <p class="case-study-content" id="study2-content">
-                        Led by <span class="highlight">Jaime A. Miranda</span>, this research highlighted PHASE-seq's capability to provide an unbiased assessment of off-target mutations, a critical concern in the development and application of genome editing technologies. It showcased the method's precision in evaluating the safety of gene-editing tools.
+                        Led by <span class="highlight">Jaime A. Miranda</span>, this research highlighted PHASE-seq's capability to provide an unbiased assessment of off-target mutations, a critical concern in genome editing.
                     </p>
                     <button class="button" onclick="toggleContent('study2-content')">Read More</button>
                 </li>
-                <li>
-                    <span class="highlight">PacBio sequencing detects genome-wide ultra-low-frequency substitution mutations resulting from exposure to chemical mutagens</span> (Revollo, Miranda, et al. 2021):
+                <li class="mt-4">
+                    <span class="highlight">PacBio sequencing detects mutations resulting from exposure to chemical mutagens</span> (Revollo, Miranda, et al. 2021)
                     <p class="case-study-content" id="study3-content">
-                        This earlier work, with significant contributions from <span class="highlight">Javier R. Revollo</span> and <span class="highlight">Jaime A. Miranda</span>, established the ability of PacBio sequencing to detect genome-wide ultra-low-frequency substitution mutations induced by chemical mutagens. It provided crucial evidence for the method's utility in genotoxicity testing and understanding mutagenic mechanisms.
+                        This work established the ability of PacBio sequencing to detect genome-wide mutations induced by chemical mutagens, providing crucial evidence for its utility in genotoxicity testing.
                     </p>
                     <button class="button" onclick="toggleContent('study3-content')">Read More</button>
                 </li>
             </ul>
         </div>
 
-        <div class="section">
+        <div class="section" id="interactive">
             <h2>Interactive Features</h2>
-            <p>
-                Explore our interactive content to deepen your understanding of PHASE-seq:
-            </p>
             <ul>
                 <li>
                     <span class="highlight">Interactive Manuscript Viewer:</span> Explore our latest manuscript directly within this page.
@@ -353,6 +428,12 @@
             </ul>
         </div>
     </div>
+
+    <a href="#" id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+        </svg>
+    </a>
 
     <div class="footer">
         <p>&copy; 2025 Jaime Miranda. All rights reserved.</p>
@@ -367,7 +448,16 @@
                 element.style.display = 'block';
             }
         }
+        
+        // --- Back to Top Button ---
+        const backToTopButton = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
     </script>
 </body>
 </html>
-
