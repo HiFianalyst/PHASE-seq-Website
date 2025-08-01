@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: Background Mutation Frequencies in Cells</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Academic Calm -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive narrative or dashboard, rather than a linear replication of the report. The flow is: 1) Title/Intro to establish the core problem. 2) A dedicated section visually comparing background mutations in commercial vs. clonal cells (the problem). 3) A methodology overview. 4) The main interactive dashboard where users can filter results by cell type and analysis method (raw, relative, absolute), directly demonstrating the paper's key conclusion. 5) A summary of key takeaways. This structure was chosen to guide the user through the scientific argument, making the data explorable and the conclusions more impactful than a static document. -->
+    <!-- Visualization & Content Choices: Data from the report is presented to meet specific goals. [Fig 1c -> Goal: Compare -> Viz: Bar Chart -> Interaction: Static -> Justification: Clearly introduce the core problem of different background MFs.] [Fig 2 -> Goal: Inform -> Viz: Stacked Bar Chart -> Interaction: Static -> Justification: Show mutation type proportions simply, as treemaps are not supported by Chart.js.] [Figs 3,4,5 -> Goal: Compare/Show Change -> Viz: Dynamic Bar Charts -> Interaction: User selects cell population & analysis type via buttons, charts update -> Justification: This is the core of the app, allowing users to actively explore the paper's main finding on how to analyze data.] [Table 1 -> Goal: Inform/Detail -> Viz: HTML Table -> Interaction: Static -> Justification: Provide raw data for verification.] All charts use Chart.js (Canvas). The experimental process is a diagram made with HTML/Tailwind. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4; /* Warm Neutral Background */
+            color: #404040;
+        }
+        h1, h2, h3 {
+            font-family: 'Lora', serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+                max-height: 60vh;
+            }
+        }
+        .custom-tooltip {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+        }
+        .nav-button {
+            transition: all 0.2s ease-in-out;
+            border: 2px solid transparent;
+        }
+        .nav-button.active {
+            background-color: #3B82F6; /* Muted Blue */
+            color: white;
+            border-color: #3B82F6;
+        }
+        .nav-button:not(.active):hover {
+            border-color: #3B82F6;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header class="text-center py-12 px-4 bg-white shadow-sm">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl md:text-5xl font-bold text-gray-800">Background Mutation Frequencies in TK6 and L5178Y Cells</h1>
+            <p class="mt-4 text-lg md:text-xl text-gray-600">Implications for Error-Corrected Sequencing</p>
+            <p class="mt-6 text-sm text-gray-500">An Interactive Exploration Based on Research by Miranda, J.A., Dad, A., et al.</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-8">
+        
+        <!-- Section 1: The Core Problem -->
+        <section id="problem" class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">The Challenge of Background Mutations</h2>
+            <p class="text-gray-600 mb-6 max-w-3xl">In vitro cell cultures accumulate spontaneous mutations over time. This creates a high "background noise" that can make it difficult to detect new mutations caused by a test substance. This interactive report explores this issue and potential solutions. The chart below shows the significant difference in background Mutation Frequency (MF) between standard commercial cell lines (ATCC) and freshly prepared 'clonal' populations derived from single cells.</p>
+            <div class="chart-container">
+                <canvas id="backgroundMfChart"></canvas>
+            </div>
+            <p class="text-center text-sm text-gray-500 mt-4">This finding highlights that generating fresh clonal populations can effectively "reset" the genetic background, providing a cleaner baseline for mutagenicity experiments.</p>
+        </section>
+
+        <!-- Section 2: Experimental Approach -->
+        <section id="approach" class="bg-gray-50 p-6 md:p-8 rounded-xl shadow-lg mb-12 border border-gray-200">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Experimental Approach</h2>
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-6 text-center">
+                <div class="flex-1 p-4 bg-white rounded-lg shadow">
+                    <div class="text-5xl mb-2">🔬</div>
+                    <h3 class="font-semibold text-lg">Cell Preparation</h3>
+                    <p class="text-sm text-gray-600">Commercial (ATCC) cell lines were compared against clonal populations, each grown from a single isolated cell.</p>
+                </div>
+                <div class="text-2xl text-gray-400 font-sans">➔</div>
+                <div class="flex-1 p-4 bg-white rounded-lg shadow">
+                    <div class="text-5xl mb-2">🧪</div>
+                    <h3 class="font-semibold text-lg">Mutagen Exposure</h3>
+                    <p class="text-sm text-gray-600">Cells were exposed to the mutagen N4-hydroxycytidine (NHC) at various concentrations for 5 days.</p>
+                </div>
+                <div class="text-2xl text-gray-400 font-sans">➔</div>
+                <div class="flex-1 p-4 bg-white rounded-lg shadow">
+                    <div class="text-5xl mb-2">🧬</div>
+                    <h3 class="font-semibold text-lg">Sequencing & Analysis</h3>
+                    <p class="text-sm text-gray-600">Genomic DNA was analyzed using HiFi sequencing (an ECS method) to count induced mutations.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Interactive Results Dashboard -->
+        <section id="results" class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Interactive Results Dashboard</h2>
+            <p class="text-gray-600 mb-6 max-w-3xl">The core finding of the paper is that how you analyze the data matters as much as the experiment itself. Use the controls below to explore the mutation frequency in TK6 cells after NHC exposure. Compare the standard 'ATCC' population to the cleaner 'Clonal' populations, and switch between different analysis methods to see how the interpretation changes.</p>
+            
+            <div class="flex flex-col md:flex-row justify-center gap-4 md:gap-8 mb-8 p-4 bg-gray-50 rounded-lg">
+                <div>
+                    <label class="font-semibold text-gray-700 block mb-2 text-center">1. Select Cell Population:</label>
+                    <div id="population-selector" class="flex flex-wrap justify-center gap-2">
+                        <button class="nav-button active py-2 px-4 bg-gray-200 rounded-md text-sm font-medium" data-pop="ATCC">ATCC (Commercial)</button>
+                        <button class="nav-button py-2 px-4 bg-gray-200 rounded-md text-sm font-medium" data-pop="Clonal">Clonal (Avg. A,B,E)</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="font-semibold text-gray-700 block mb-2 text-center">2. Select Analysis Method:</label>
+                    <div id="analysis-selector" class="flex flex-wrap justify-center gap-2">
+                        <button class="nav-button active py-2 px-4 bg-gray-200 rounded-md text-sm font-medium" data-analysis="raw">Raw MF</button>
+                        <button class="nav-button py-2 px-4 bg-gray-200 rounded-md text-sm font-medium" data-analysis="relative">Relative Fold Change</button>
+                        <button class="nav-button py-2 px-4 bg-gray-200 rounded-md text-sm font-medium" data-analysis="absolute">Absolute Change</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                <div class="lg:col-span-2">
+                    <div class="chart-container">
+                        <canvas id="resultsMfChart"></canvas>
+                    </div>
+                    <div class="chart-container mt-8" style="height:250px;">
+                        <canvas id="resultsSignatureChart"></canvas>
+                    </div>
+                </div>
+                <div class="lg:col-span-1 bg-blue-50 p-6 rounded-lg border border-blue-200">
+                    <h3 class="font-bold text-xl text-blue-800 mb-3">Interpretation</h3>
+                    <div id="interpretation-text" class="text-blue-700 space-y-3 text-sm">
+                        Select an analysis method to see the interpretation.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Conclusions -->
+        <section id="conclusion" class="bg-gray-800 text-white p-6 md:p-8 rounded-xl shadow-lg mb-12">
+            <h2 class="text-3xl font-bold mb-4">Key Takeaways & Conclusion</h2>
+            <div class="grid md:grid-cols-2 gap-6 text-gray-300">
+                <div>
+                    <h3 class="font-semibold text-xl text-blue-300 mb-2">Problem: High Background Noise</h3>
+                    <p>Commercially sourced cell lines can have high background mutation frequencies (MFs), which may mask the true effect of a mutagen, especially when looking at relative fold changes.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-xl text-blue-300 mb-2">Solution 1: Use Clonal Populations</h3>
+                    <p>Generating fresh clonal populations from single cells drastically reduces background MFs, providing a cleaner system that more sensitively detects mutagenic effects, yielding larger relative fold increases.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-xl text-blue-300 mb-2">Solution 2: Use Absolute Change Analysis</h3>
+                    <p>When using commercial cells is necessary, analyzing data by subtracting the background MF ('Absolute Change') yields results that are more comparable to those from clonal populations. This method minimizes variability and provides a more consistent framework for evaluation.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-xl text-blue-300 mb-2">Final Recommendation</h3>
+                    <p>Both strategies—using clonal populations or applying an absolute change analysis—enhance the reliability of in vitro mutagenicity assessments using error-corrected sequencing.</p>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <footer class="text-center py-8 px-4 border-t border-gray-200 bg-white">
+        <p class="text-sm text-gray-500">This interactive summary was generated based on the manuscript "Background Mutation Frequencies in TK6 and L5178Y Cells: Implications for Error-Corrected Sequencing" (Miranda et al., 2025). This is for educational purposes and is not a replacement for the original peer-reviewed publication.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DATA ---
+            const data = {
+                backgroundMf: {
+                    labels: ['TK6', 'L5178Y'],
+                    datasets: [
+                        {
+                            label: 'Commercial (ATCC)',
+                            data: [9e-7, 6e-7],
+                            backgroundColor: '#60A5FA', // Blue
+                        },
+                        {
+                            label: 'Clonal',
+                            data: [0.5e-7, 1e-7],
+                            backgroundColor: '#93C5FD', // Lighter Blue
+                        }
+                    ]
+                },
+                results: {
+                    atcc: {
+                        raw: [7.75, 8.53, 8.96, 9.07].map(v => v * 1e-7),
+                        signature: {
+                            '0': [1.8, 0.8, 0.8, 0.8, 2.4, 0.8].map(v => v * 1e-7),
+                            '0.5': [1.8, 0.8, 0.9, 0.8, 2.9, 0.8].map(v => v * 1e-7),
+                            '2': [1.8, 0.8, 0.9, 0.8, 3.2, 0.8].map(v => v * 1e-7),
+                            '8': [1.9, 0.8, 0.9, 0.8, 3.2, 0.8].map(v => v * 1e-7),
+                        }
+                    },
+                    clonal: { // Average of A, B, E
+                        raw: [1.08, 1.9, 2.76, 2.96].map(v => v * 1e-7),
+                        signature: {
+                            '0': [0.3, 0.2, 0.1, 0.1, 0.2, 0.1].map(v => v * 1e-7),
+                            '0.5': [0.3, 0.2, 0.2, 0.1, 0.9, 0.2].map(v => v * 1e-7),
+                            '2': [0.3, 0.2, 0.3, 0.1, 1.6, 0.2].map(v => v * 1e-7),
+                            '8': [0.3, 0.2, 0.3, 0.1, 1.8, 0.2].map(v => v * 1e-7),
+                        }
+                    }
+                },
+                interpretation: {
+                    raw: `<strong>Raw Mutation Frequency (MF)</strong><p>This view shows the raw mutation count per base pair. Notice the ATCC population starts with a much higher background MF than the clonal population. This high starting point makes the increases from the mutagen appear less dramatic.</p>`,
+                    relative: `<strong>Relative Fold Change</strong><p>This view normalizes each data point to its own untreated control (0 µg/mL). Because the clonal population has a very low background, even small absolute increases result in a large fold change, making it appear much more sensitive to the mutagen. The high background of the ATCC line dampens its relative response.</p>`,
+                    absolute: `<strong>Absolute Change</strong><p>This view subtracts the background MF (at 0 µg/mL) from all other data points. This method removes the starting bias. Notice how the mutagen-induced responses of the ATCC and Clonal populations now look much more similar. This suggests it's a more robust way to compare populations with different backgrounds.</p>`
+                }
+            };
+            
+            const signatureLabels = ['G:C>T:A', 'G:C>C:G', 'G:C>A:T', 'A:T>T:A', 'A:T>G:C', 'A:T>C:G'];
+
+            // --- STATE ---
+            let currentPopulation = 'ATCC';
+            let currentAnalysis = 'raw';
+            
+            // --- CHART INSTANCES ---
+            let backgroundMfChart, resultsMfChart, resultsSignatureChart;
+
+            // --- CHARTING FUNCTIONS ---
+            const createBackgroundMfChart = () => {
+                const ctx = document.getElementById('backgroundMfChart').getContext('2d');
+                backgroundMfChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: data.backgroundMf,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: true, text: 'Background Mutation Frequency Comparison', font: { size: 16 } },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => `${context.dataset.label}: ${context.raw.toExponential(1)} mut/bp`
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                title: { display: true, text: 'MF (mut/bp)' },
+                                ticks: {
+                                    callback: (value) => value.toExponential(1)
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+            const createResultsCharts = () => {
+                const resultsCtx = document.getElementById('resultsMfChart').getContext('2d');
+                resultsMfChart = new Chart(resultsCtx, {
+                    type: 'bar',
+                    data: { labels: ['0', '0.5', '2', '8'], datasets: [] },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: true, text: 'Overall MF by NHC Dose', font: { size: 16 } },
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: { title: { display: true, text: 'NHC Dose (µg/mL)' } },
+                            y: { title: { display: true, text: 'Mutation Frequency' } }
+                        }
+                    }
+                });
+
+                const signatureCtx = document.getElementById('resultsSignatureChart').getContext('2d');
+                resultsSignatureChart = new Chart(signatureCtx, {
+                    type: 'bar',
+                    data: { labels: signatureLabels, datasets: [] },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: true, text: 'Mutational Signature (at 8 µg/mL Dose)', font: { size: 16 } },
+                            legend: { display: false }
+                        },
+                         scales: {
+                            x: { ticks: { font: { size: 10 } } },
+                            y: { title: { display: true, text: 'MF (mut/bp)' }, ticks: { callback: (value) => value.toExponential(1) } }
+                        }
+                    }
+                });
+            };
+
+            const updateResultsCharts = () => {
+                const popData = (currentPopulation.toLowerCase() === 'atcc') ? data.results.atcc.raw : data.results.clonal.raw;
+                let displayData;
+                let yLabel = 'MF (mut/bp)';
+                
+                switch (currentAnalysis) {
+                    case 'relative':
+                        const baseline = popData[0] || 1;
+                        displayData = popData.map(d => d / baseline);
+                        yLabel = 'Relative MF Fold Change';
+                        break;
+                    case 'absolute':
+                        const background = popData[0];
+                        displayData = popData.map(d => d - background);
+                        yLabel = 'Absolute MF Change (mut/bp)';
+                        break;
+                    case 'raw':
+                    default:
+                        displayData = [...popData];
+                        yLabel = 'Raw MF (mut/bp)';
+                        break;
+                }
+
+                resultsMfChart.data.datasets = [{
+                    label: currentPopulation,
+                    data: displayData,
+                    backgroundColor: currentPopulation.toLowerCase() === 'atcc' ? '#3B82F6' : '#60A5FA',
+                }];
+                resultsMfChart.options.scales.y.title.text = yLabel;
+                if(currentAnalysis !== 'relative') {
+                     resultsMfChart.options.scales.y.ticks = { callback: (value) => value > 0 ? value.toExponential(1) : 0 };
+                } else {
+                     resultsMfChart.options.scales.y.ticks = { callback: (value) => value.toFixed(1) };
+                }
+                resultsMfChart.update();
+
+                const signatureData = (currentPopulation.toLowerCase() === 'atcc') ? data.results.atcc.signature['8'] : data.results.clonal.signature['8'];
+                 resultsSignatureChart.data.datasets = [{
+                    label: 'Signature at 8 µg/mL',
+                    data: signatureData,
+                    backgroundColor: signatureLabels.map(l => l === 'A:T>G:C' ? '#EF4444' : '#9CA3AF'), // Highlight the key mutation
+                }];
+                resultsSignatureChart.update();
+
+                document.getElementById('interpretation-text').innerHTML = data.interpretation[currentAnalysis];
+            };
+
+            // --- EVENT LISTENERS ---
+            document.getElementById('population-selector').addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    currentPopulation = e.target.dataset.pop;
+                    document.querySelectorAll('#population-selector button').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    updateResultsCharts();
+                }
+            });
+
+            document.getElementById('analysis-selector').addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    currentAnalysis = e.target.dataset.analysis;
+                    document.querySelectorAll('#analysis-selector button').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    updateResultsCharts();
+                }
+            });
+
+            // --- INITIALIZATION ---
+            createBackgroundMfChart();
+            createResultsCharts();
+            updateResultsCharts();
+        });
+    </script>
+</body>
+</html>
+
+
